@@ -27,8 +27,8 @@
 
 Summary:        Linux Kernel
 Name:           kernel
-Version:        5.15.123.1
-Release:        100%{?dist}
+Version:        5.15.118.1
+Release:        200%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -412,14 +412,6 @@ grub2-mkconfig -o /boot/grub2/grub.cfg
 %{_sysconfdir}/bash_completion.d/bpftool
 
 %changelog
-* Tue Aug 01 2023 CBL-Mariner Servicing Account <cblmargh@microsoft.com> - 5.15.123.1-1
-- Auto-upgrade to 5.15.123.1
-
-* Fri Jul 28 2023 Juan Camposeco <juanarturoc@microsoft.com> - 5.15.122.1-2
-- Enable Mellanox DPU drivers and configurations, ARM64 only
-
-* Wed Jul 26 2023 CBL-Mariner Servicing Account <cblmargh@microsoft.com> - 5.15.122.1-1
-- Auto-upgrade to 5.15.122.1
 * Fri Jul 21 2023 Andy Zaugg <azaugg@linkedin.com> - 5.15.118.1-2
 - Removed Mariner cfg files from kernel and moving to grub2-mkconfig
 
