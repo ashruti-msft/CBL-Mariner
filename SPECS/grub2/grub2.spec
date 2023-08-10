@@ -6,7 +6,7 @@
 Summary:        GRand Unified Bootloader
 Name:           grub2
 Version:        2.06
-Release:        200%{?dist}
+Release:        201%{?dist}
 License:        GPLv3+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -230,7 +230,8 @@ mkdir %{buildroot}%{_sysconfdir}/sysconfig
 ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
 install -vdm 700 %{buildroot}/boot/%{name}
 set -x
-cp %{SOURCE3} %{buildroot}%{_sysconfdir}/grub.d/
+mkdir -p %{buildroot}%{_sysconfdir}/grub.d
+install -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/grub.d/31_systemd
 set +x
 touch %{buildroot}/boot/%{name}/grub.cfg
 chmod 400 %{buildroot}/boot/%{name}/grub.cfg

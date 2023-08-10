@@ -1023,6 +1023,26 @@ func InstallGrubCfg(installRoot, rootDevice, bootUUID, bootPrefix string, encryp
 		stderr string
 	)
 
+	stdout, stderr, err = shell.Execute("rpm", "-qa")
+	logger.Log.Warnf("Checking rpm -qa for system right before grub2-mkconfig: %v", err)
+	logger.Log.Warn(stdout)
+	logger.Log.Warn(stderr)
+
+	stdout, stderr, err = shell.Execute("ls", "-la", "/etc/grub.d")
+	logger.Log.Warnf("Checking ls /etc/grub.d: %v", err)
+	logger.Log.Warn(stdout)
+	logger.Log.Warn(stderr)
+
+	stdout, stderr, err = shell.Execute("ls", "-la", "/installroot/etc/grub.d")
+	logger.Log.Warnf("Checking ls /installroot/etc/grub.d: %v", err)
+	logger.Log.Warn(stdout)
+	logger.Log.Warn(stderr)
+
+	stdout, stderr, err = shell.Execute("chroot", "/installroot")
+	logger.Log.Warnf("Chrooting!")
+	logger.Log.Warn(stdout)
+	logger.Log.Warn(stderr)
+
 	stdout, stderr, err = shell.Execute("grub2-mkconfig", "-o", grubConfFile)
 	if err != nil {
 		logger.Log.Warnf("Failed to run grub2-mkconfig: %v", err)
@@ -1034,6 +1054,11 @@ func InstallGrubCfg(installRoot, rootDevice, bootUUID, bootPrefix string, encryp
 		logger.Log.Warn(stdout)
 		return err
 	}
+
+	stdout, stderr, err = shell.Execute("exit")
+	logger.Log.Warnf("exit chroot!")
+	logger.Log.Warn(stdout)
+	logger.Log.Warn(stderr)
 
 	return
 }
