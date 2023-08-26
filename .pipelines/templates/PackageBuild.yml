@@ -90,6 +90,10 @@ parameters:
     type: string
     default: "srpms.tar.gz"
 
+  - name: TEMP_packagesToBuild
+    type: string
+    default: ""
+
 steps:
   - template: ToolkitCheck.yml@${{ parameters.selfRepoName }}
     parameters:
@@ -154,17 +158,24 @@ steps:
         use_ccache_arg="USE_CCACHE=n"
       fi
 
+      srpm_pack_list="${{ parameters.srpmPackList }}"
+      if [[ -n "${{ parameters.TEMP_packagesToBuild }}" ]]; then
+        srpm_pack_list="${{ parameters.TEMP_packagesToBuild }}"
+      fi
+
       sudo make -C "${{ parameters.buildRepoRoot }}/toolkit" build-packages -j$(nproc) \
         CONCURRENT_PACKAGE_BUILDS=${{ parameters.concurrentPackageBuilds }} \
         CONFIG_FILE="" \
         REBUILD_TOOLS=y \
         REPO_LIST="${{ parameters.extraPackageRepos }}" \
         SPECS_DIR="${{ parameters.buildRepoRoot }}/${{ parameters.specsFolderPath }}" \
-        SRPM_PACK_LIST="${{ parameters.srpmPackList }}" \
+        SRPM_PACK_LIST="$srpm_pack_list" \
         $delta_fetch_arg \
         $quick_rebuild_packages_arg \
+        $use_ccache_arg \
         $run_check_arg \
-        $use_ccache_arg
+        PACKAGE_BUILD_LIST="${{ parameters.TEMP_packagesToBuild }}" \
+        PACKAGE_REBUILD_LIST="${{ parameters.TEMP_packagesToBuild }}"
     displayName: "Build packages"
 
   - ${{ if parameters.outputArtifactsFolder }}:
