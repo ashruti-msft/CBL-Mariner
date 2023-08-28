@@ -38,7 +38,15 @@ func DownloadFile(url, dst string, caCerts *x509.CertPool, tlsCerts []tls.Certif
 	if err != nil {
 		return
 	}
-	defer dstFile.Close()
+	defer func() {
+		if err != nil {
+			cleanupErr := os.Remove(dst)
+			if cleanupErr != nil {
+				logger.Log.Warnf("Failed to remove file (%s) after a failed download: %s", dst, cleanupErr)
+			}
+		}
+		dstFile.Close()
+	}()
 
 	tlsConfig := &tls.Config{
 		RootCAs:      caCerts,
