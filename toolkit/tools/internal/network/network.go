@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/file"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/logger"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/retry"
 	"github.com/microsoft/CBL-Mariner/toolkit/tools/internal/shell"
@@ -30,7 +31,7 @@ func JoinURL(baseURL string, extraPaths ...string) string {
 	return fmt.Sprintf("%s%s%s", baseURL, urlPathSeparator, appendToBase)
 }
 
-// DownloadFile downloads `url` into `dst`. `caCerts` may be nil.
+// DownloadFile downloads `url` into `dst`. `caCerts` may be nil. If there is an error `dst` will be removed.
 func DownloadFile(url, dst string, caCerts *x509.CertPool, tlsCerts []tls.Certificate) (err error) {
 	logger.Log.Debugf("Downloading (%s) -> (%s)", url, dst)
 
@@ -39,10 +40,11 @@ func DownloadFile(url, dst string, caCerts *x509.CertPool, tlsCerts []tls.Certif
 		return
 	}
 	defer func() {
+		// If there was an error, ensure that the file is removed
 		if err != nil {
-			cleanupErr := os.Remove(dst)
+			cleanupErr := file.RemoveFileIfExists(dst)
 			if cleanupErr != nil {
-				logger.Log.Warnf("Failed to remove file (%s) after a failed download: %s", dst, cleanupErr)
+				logger.Log.Errorf("Failed to remove failed network download file '%s': %s", dst, err)
 			}
 		}
 		dstFile.Close()
